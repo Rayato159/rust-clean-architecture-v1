@@ -1,0 +1,15 @@
+---
+config:
+  theme: base
+---
+sequenceDiagram
+    client->>handler: Request to record a new staff
+    handler->>usecase: Validate the request
+    usecase->>repository: Check if staff is already existing
+    repository-->>usecase: Return the result
+    usecase->>repository: Insert the new staff
+    repository-->>usecase: Return the id of result
+    usecase->>repository: Find the staff by id
+    repository-->>usecase: Return the staff
+    usecase-->>handler: Return the result
+    handler-->>client: Return the result as JSON

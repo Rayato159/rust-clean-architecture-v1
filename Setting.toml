@@ -1,0 +1,12 @@
+[server]
+port = 80
+timeout = 120
+body_limit = 10 # MiB
+
+[database]
+host = "localhost"
+port = 5432
+user = "postgres"
+password = "123456"
+dbname = "mygamedb"
+schema = "public"
