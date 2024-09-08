@@ -1,10 +1,8 @@
 # Rust Clean Architecture V1
 `Author:` Ruangyot Nanchiang (Lookhin)
 
-This is a simple example of a Rust project using the Clean Architecture principles.
-
 ## Introduction
-This project is a simple example of a Rust project using the Clean Architecture principles.
+This is a simple example of a Rust project using the Clean Architecture principles.
 
 The project is a simple REST API that allows you to record a new item into the database but need to validate the item fisrt in-case of the item is already exist in the database.
 
@@ -32,29 +30,29 @@ The project is a simple REST API that allows you to record a new item into the d
    |    📄main.rs
    |    📄setting.rs
    |    📄database.rs
+   |    📄time_helper.rs
    |
    +---📂entities/
    |    📄items.rs
    |    📄mod.rs
    |    
    +---📂handlers/
-   |    📄items.rs
+   |    📄staff.rs
    |    📄mod.rs
    |    
    +---📂models/
-   |    📄items.rs
+   |    📄item.rs
    |    📄error.rs
-   |    📄http_response.rs
    |    📄mod.rs
    |    
    +---📂repositories/
    |    📄items.rs
-   |    📄mage.rs
+   |    📄staff.rs
    |    📄mod.rs
    | 
    +---📂usecases/
-        📄items.rs
-        📄items_test.rs
+        📄staff_test.rs
+        📄staff.rs
         📄mod.rs
 ```
 
