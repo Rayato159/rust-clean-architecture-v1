@@ -1,0 +1,18 @@
+[package]
+name = "tracing-span"
+version = "0.1.0"
+edition = "2021"
+
+[lib]
+name = "tracing_span"
+path = "src/lib.rs"
+proc-macro = true
+
+[dependencies]
+darling = "0.20.10"
+proc-macro2 = "1.0.86"
+quote = "1.0.37"
+syn = "2.0.77"
+opentelemetry = "0.22.0"
+opentelemetry_sdk = "0.22.1"
+opentelemetry-stdout = { version = "0.3.0", features = ["trace"] }

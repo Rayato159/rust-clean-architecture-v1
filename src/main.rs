@@ -8,7 +8,7 @@ use axum::{
 use rust_clean_architecture_v1::{
     database, handlers::staff::staff_adding, models::error::ErrorResponse,
     repositories::staff::StaffRepository, setting::Setting, time_helper::TimerHelper,
-    tracer::init_tracer, usecases::staff::StaffUsecase,
+    usecases::staff::StaffUsecase,
 };
 use std::{net::SocketAddr, sync::Arc, time::Duration};
 use tokio::{net::TcpListener, signal};
@@ -19,14 +19,14 @@ use tower_http::{
     trace::TraceLayer,
 };
 use tracing::info;
+use tracing_span::init_tracer;
 
 #[tokio::main]
+#[init_tracer]
 async fn main() {
     tracing_subscriber::fmt()
         .with_max_level(tracing::Level::DEBUG)
         .init();
-
-    init_tracer();
 
     let setting = Setting::new().unwrap();
     info!("setting has been loaded.");

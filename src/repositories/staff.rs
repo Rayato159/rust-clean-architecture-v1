@@ -1,12 +1,9 @@
-use std::sync::Arc;
-
+use super::items::{ItemsRepository, SharedItemsRepository};
+use crate::entities::items::Items;
 use axum::async_trait;
 use sqlx::PgPool;
+use std::sync::Arc;
 use tracing::error;
-
-use crate::entities::items::Items;
-
-use super::items::{ItemsRepository, SharedItemsRepository};
 
 pub struct StaffRepository {
     db_pool: PgPool,

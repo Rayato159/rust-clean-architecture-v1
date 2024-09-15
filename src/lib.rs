@@ -5,5 +5,4 @@ pub mod models;
 pub mod repositories;
 pub mod setting;
 pub mod time_helper;
-pub mod tracer;
 pub mod usecases;

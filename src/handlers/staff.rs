@@ -1,21 +1,17 @@
-use std::sync::Arc;
-
+use crate::{models::item::StaffAdding, usecases::staff::StaffUsecase};
 use axum::{http::StatusCode, response::IntoResponse, Json};
+use opentelemetry::trace::Span;
+use opentelemetry::trace::Tracer;
+use std::sync::Arc;
+use tracing_span::tracing_execution;
 
-use crate::{models::item::StaffAdding, tracer::tracing_span, usecases::staff::StaffUsecase};
-
+#[tracing_execution]
 pub async fn staff_adding(
     Json(body): Json<StaffAdding>,
     staff_usecase: Arc<StaffUsecase>,
 ) -> impl IntoResponse {
     match staff_usecase.adding(body).await {
-        Ok(r) => {
-            tracing_span("staff_adding".to_string(), None);
-            (StatusCode::CREATED, Json(r)).into_response()
-        }
-        Err(e) => {
-            tracing_span("staff_adding".to_string(), Some(e.error().error));
-            e.error().into_response()
-        }
+        Ok(r) => (StatusCode::CREATED, Json(r)).into_response(),
+        Err(e) => e.error().into_response(),
     }
 }

@@ -1,5 +1,3 @@
-use chrono::NaiveDateTime;
-
 use crate::{
     models::{
         error::{APIError, IntoErrorResponse},
@@ -7,6 +5,7 @@ use crate::{
     },
     time_helper::IntoTimerHelperShared,
 };
+use chrono::NaiveDateTime;
 
 #[derive(Debug, Clone, sqlx::FromRow, PartialEq)]
 pub struct Items {

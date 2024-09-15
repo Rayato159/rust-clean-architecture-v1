@@ -1,7 +1,10 @@
+workspace = { members = ["tracing-span"] }
+
 [package]
 name = "rust-clean-architecture-v1"
 version = "0.1.0"
 edition = "2021"
+resolver = "2"
 
 [dependencies]
 axum = "0.7.5"
@@ -25,3 +28,4 @@ mockall = "0.13.0"
 opentelemetry = "0.22.0"
 opentelemetry_sdk = "0.22.1"
 opentelemetry-stdout = { version = "0.3.0", features = ["trace"] }
+tracing-span = { path = "./tracing-span" }

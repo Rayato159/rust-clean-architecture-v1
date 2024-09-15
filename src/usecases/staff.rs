@@ -1,5 +1,3 @@
-use std::sync::Arc;
-
 use crate::{
     entities::items::Items as ItemsEntity,
     models::{
@@ -9,6 +7,7 @@ use crate::{
     repositories::items::SharedItemsRepository,
     time_helper::IntoTimerHelperShared,
 };
+use std::sync::Arc;
 
 pub struct StaffUsecase {
     items_repository: SharedItemsRepository,
