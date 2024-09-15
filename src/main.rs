@@ -1,10 +1,18 @@
-use axum::{http::Method, routing::post, Router};
-use rust_clean_architecture_v1::{
-    database, handlers::staff::staff_adding, repositories::staff::StaffRepository,
-    setting::Setting, time_helper::TimerHelper, usecases::staff::StaffUsecase,
+use axum::{
+    error_handling::HandleErrorLayer,
+    http::{Method, StatusCode},
+    response::IntoResponse,
+    routing::post,
+    BoxError, Router,
 };
-use std::{net::SocketAddr, sync::Arc};
-use tokio::net::TcpListener;
+use rust_clean_architecture_v1::{
+    database, handlers::staff::staff_adding, models::error::ErrorResponse,
+    repositories::staff::StaffRepository, setting::Setting, time_helper::TimerHelper,
+    usecases::staff::StaffUsecase,
+};
+use std::{net::SocketAddr, sync::Arc, time::Duration};
+use tokio::{net::TcpListener, signal};
+use tower::{timeout::TimeoutLayer, ServiceBuilder};
 use tower_http::{
     cors::{Any, CorsLayer},
     trace::TraceLayer,
@@ -48,7 +56,17 @@ async fn main() {
                 move |body| staff_adding(body, usecase)
             }),
         )
-        .layer(TraceLayer::new_for_http());
+        .layer(TraceLayer::new_for_http())
+        .layer(
+            ServiceBuilder::new()
+                .layer(HandleErrorLayer::new(|_: BoxError| async {
+                    StatusCode::REQUEST_TIMEOUT
+                }))
+                .layer(TimeoutLayer::new(Duration::from_secs(
+                    setting.server.timeout.try_into().unwrap(),
+                ))),
+        )
+        .fallback(not_found);
 
     let addr = SocketAddr::from(([0, 0, 0, 0], setting.server.port as u16));
 
@@ -56,5 +74,42 @@ async fn main() {
 
     info!("Server running on port {}", setting.server.port);
 
-    axum::serve(listener, app).await.unwrap();
+    axum::serve(listener, app)
+        .with_graceful_shutdown(shutdown_signal())
+        .await
+        .unwrap();
+}
+
+pub async fn not_found() -> impl IntoResponse {
+    ErrorResponse {
+        error: "Endpoint not found".to_string(),
+        status_code: StatusCode::NOT_FOUND,
+    }
+    .into_response()
+}
+
+async fn shutdown_signal() {
+    let ctrl_c = async {
+        signal::ctrl_c()
+            .await
+            .expect("Failed to install Ctrl+C handler");
+    };
+
+    #[cfg(unix)]
+    let terminate = async {
+        signal::unix::signal(signal::unix::SignalKind::terminate())
+            .expect("Failed to install signal handler")
+            .recv()
+            .await;
+    };
+
+    #[cfg(not(unix))]
+    let terminate = std::future::pending::<()>();
+
+    tokio::select! {
+        _ = ctrl_c => {
+            info!("Starting graceful shutdown");
+        },
+        _ = terminate => {},
+    }
 }
