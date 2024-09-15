@@ -27,7 +27,12 @@ impl StaffUsecase {
     }
 
     pub async fn adding(&self, staff: StaffAdding) -> Result<Item, Box<dyn IntoErrorResponse>> {
-        if let Ok(_) = self.items_repository.find_by_name(staff.name.clone()).await {
+        if self
+            .items_repository
+            .find_by_name(staff.name.clone())
+            .await
+            .is_ok()
+        {
             return Err(Box::new(APIError::ItemAlreadyExists(staff.name.clone())));
         };
 

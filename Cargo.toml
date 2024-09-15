@@ -22,3 +22,6 @@ sqlx = { version = "0.8", features = [
 ] }
 config = "0.14.0"
 mockall = "0.13.0"
+opentelemetry = "0.22.0"
+opentelemetry_sdk = "0.22.1"
+opentelemetry-stdout = { version = "0.3.0", features = ["trace"] }

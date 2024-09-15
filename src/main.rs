@@ -2,13 +2,13 @@ use axum::{
     error_handling::HandleErrorLayer,
     http::{Method, StatusCode},
     response::IntoResponse,
-    routing::post,
+    routing::{get, post},
     BoxError, Router,
 };
 use rust_clean_architecture_v1::{
     database, handlers::staff::staff_adding, models::error::ErrorResponse,
     repositories::staff::StaffRepository, setting::Setting, time_helper::TimerHelper,
-    usecases::staff::StaffUsecase,
+    tracer::init_tracer, usecases::staff::StaffUsecase,
 };
 use std::{net::SocketAddr, sync::Arc, time::Duration};
 use tokio::{net::TcpListener, signal};
@@ -24,6 +24,8 @@ async fn main() {
     tracing_subscriber::fmt()
         .with_max_level(tracing::Level::DEBUG)
         .init();
+
+    init_tracer();
 
     let setting = Setting::new().unwrap();
     info!("setting has been loaded.");
@@ -49,6 +51,7 @@ async fn main() {
                 ])
                 .allow_origin(Any),
         )
+        .route("/", get(health_check))
         .route(
             "/items/staff",
             post({
@@ -86,6 +89,10 @@ pub async fn not_found() -> impl IntoResponse {
         status_code: StatusCode::NOT_FOUND,
     }
     .into_response()
+}
+
+pub async fn health_check() -> impl IntoResponse {
+    (StatusCode::OK, "OK").into_response()
 }
 
 async fn shutdown_signal() {
