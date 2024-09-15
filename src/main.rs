@@ -15,6 +15,7 @@ use tokio::{net::TcpListener, signal};
 use tower::{timeout::TimeoutLayer, ServiceBuilder};
 use tower_http::{
     cors::{Any, CorsLayer},
+    limit::RequestBodyLimitLayer,
     trace::TraceLayer,
 };
 use tracing::info;
@@ -51,6 +52,11 @@ async fn main() {
                 ])
                 .allow_origin(Any),
         )
+        .layer(RequestBodyLimitLayer::new(
+            (setting.server.body_limit * 1024 * 1024)
+                .try_into()
+                .unwrap(),
+        ))
         .route("/", get(health_check))
         .route(
             "/items/staff",
